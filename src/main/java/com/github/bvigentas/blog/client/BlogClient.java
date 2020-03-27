@@ -61,6 +61,11 @@ public class BlogClient {
 
         System.out.println("Received delete blog response");
         System.out.println(deleteResponse.getBlogId());
+
+        blogCliente.listBlog(ListBlogRequest.newBuilder().build()).forEachRemaining(blogFound -> {
+            System.out.println("Received list blog response");
+            System.out.println(blogFound.toString());
+        });
     }
 
 }
