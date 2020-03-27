@@ -40,6 +40,20 @@ public class BlogClient {
 
         System.out.println("Received read blog response");
         System.out.println(readResponse.toString());
+
+        Blog blogToBeUpdated = Blog.newBuilder()
+                .setId(response.getBlog().getId())
+                .setAuthorId(response.getBlog().getAuthorId())
+                .setContent(response.getBlog().getContent())
+                .setTitle("New Title")
+                .build();
+
+        UpdateBlogResponse updateResponse = blogCliente.updateBlog(UpdateBlogRequest.newBuilder().setBlog(
+                blogToBeUpdated
+        ).build());
+
+        System.out.println("Received updated blog response");
+        System.out.println(updateResponse.getBlog().toString());
     }
 
 }
