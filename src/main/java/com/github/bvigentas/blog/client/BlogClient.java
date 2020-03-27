@@ -54,6 +54,13 @@ public class BlogClient {
 
         System.out.println("Received updated blog response");
         System.out.println(updateResponse.getBlog().toString());
+
+        DeleteBlogResponse deleteResponse = blogCliente.deleteBlog(DeleteBlogRequest.newBuilder()
+                .setBlogId(response.getBlog().getId())
+                .build());
+
+        System.out.println("Received delete blog response");
+        System.out.println(deleteResponse.getBlogId());
     }
 
 }

@@ -130,7 +130,7 @@ public class BlogServiceImpl extends BlogServiceGrpc.BlogServiceImplBase {
     }
 
     @Override
-    public void deleteBlog(DeleteBlogRequest request, StreamObserver<DeleteBlogRequest> responseObserver) {
+    public void deleteBlog(DeleteBlogRequest request, StreamObserver<DeleteBlogResponse> responseObserver) {
 
         String blogId = request.getBlogId();
         DeleteResult result = null;
@@ -150,12 +150,30 @@ public class BlogServiceImpl extends BlogServiceGrpc.BlogServiceImplBase {
                             .asRuntimeException()
             );
         } else {
-            responseObserver.onNext(DeleteBlogRequest.newBuilder()
+            responseObserver.onNext(DeleteBlogResponse.newBuilder()
                     .setBlogId(blogId)
                     .build());
 
             responseObserver.onCompleted();
         }
+
+    }
+
+    @Override
+    public void listBlog(ListBlogRequest request, StreamObserver<ListBlogResponse> responseObserver) {
+
+        collection.find().forEach(document -> {
+            responseObserver.onNext(ListBlogResponse.newBuilder()
+                    .setBlog(Blog.newBuilder()
+                            .setAuthorId(document.getString("author_id"))
+                            .setTitle(document.getString("title"))
+                            .setContent(document.getString("content"))
+                            .setId(document.getObjectId("_id").toString())
+                            .build())
+                    .build());
+        });
+
+        responseObserver.onCompleted();
 
     }
 }
