@@ -4,6 +4,7 @@ import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
+import com.mongodb.client.result.DeleteResult;
 import com.proto.blog.*;
 import io.grpc.Status;
 import io.grpc.stub.StreamObserver;
@@ -126,7 +127,35 @@ public class BlogServiceImpl extends BlogServiceGrpc.BlogServiceImplBase {
 
         }
 
+    }
 
+    @Override
+    public void deleteBlog(DeleteBlogRequest request, StreamObserver<DeleteBlogRequest> responseObserver) {
+
+        String blogId = request.getBlogId();
+        DeleteResult result = null;
+
+        try {
+            result = collection.deleteOne(eq("_id", new ObjectId(blogId)));
+        } catch (Exception e){
+            responseObserver.onError(
+                    Status.NOT_FOUND.withDescription("Blog with id " + blogId + " not found.")
+                            .asRuntimeException()
+            );
+        }
+
+        if (result.getDeletedCount() == 0) {
+            responseObserver.onError(
+                    Status.NOT_FOUND.withDescription("Blog with id " + blogId + " not found.")
+                            .asRuntimeException()
+            );
+        } else {
+            responseObserver.onNext(DeleteBlogRequest.newBuilder()
+                    .setBlogId(blogId)
+                    .build());
+
+            responseObserver.onCompleted();
+        }
 
     }
 }
